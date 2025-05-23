@@ -236,5 +236,31 @@ case 'parent':
 
 //     return response()->json(['message' => 'Enseignant supprimé avec succès.']);
 // }
+public function getEnfants(Request $request)
+{
+    $user = Auth::user();
+
+    // ✅ Vérification si l'utilisateur est null
+    if (!$user) {
+        return response()->json(['message' => 'Utilisateur non connecté'], 401);
+    }
+
+    if ($user->role !== 'parent') {
+        return response()->json(['message' => 'Accès refusé'], 403);
+    }
+
+    $parent = ParentModel::where('user_id', $user->id)->first();
+
+    if (!$parent) {
+        return response()->json(['message' => 'Parent introuvable'], 404);
+    }
+
+    $enfants = Etudiant::with('user')
+        ->where('parent_id', $parent->id)
+        ->get();
+
+    return response()->json($enfants);
+}
+
 
 }

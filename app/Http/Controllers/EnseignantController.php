@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Enseignant;
+use App\Models\Matiere;
 
 class EnseignantController extends Controller
 {
@@ -14,8 +15,11 @@ class EnseignantController extends Controller
     public function index()
     {
         // $enseignants = User::where('role', 'enseignant')->get();
+
         $enseignants = User::where('role', 'enseignant')->with('enseignant')->get();
         return response()->json($enseignants);
+        
+        
     }
 
     // Supprimer un enseignant
@@ -71,5 +75,34 @@ class EnseignantController extends Controller
 
     return response()->json(['message' => 'Status mis à jour avec succès.']);
 }
+
+
+// public function mesMatieres($id)
+// {
+//     $enseignant = User::where('id', $id)->where('role', 'enseignant')->first();
+
+//     if (!$enseignant) {
+//         return response()->json(['message' => 'Enseignant non trouvé.'], 404);
+//     }
+
+//     // Jib les matières li assignées lih (matiere.enseignant_id == $id)
+//     $matieres = Matiere::where('enseignant_id', $id)->get();
+
+//     return response()->json($matieres);
+// }
+public function mesMatieres($id)
+{
+    $enseignant = Enseignant::find($id); // ✅ maintenant on utilise enseignants.id
+
+    if (!$enseignant) {
+        return response()->json(['message' => 'Enseignant non trouvé.'], 404);
+    }
+
+    // matières li f matieres.enseignant_id == enseignants.id
+    $matieres = Matiere::where('enseignant_id', $enseignant->id)->get();
+
+    return response()->json($matieres);
+}
+
 
 }

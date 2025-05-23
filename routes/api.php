@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get('/notes/matiere/{matiere_id}', [NoteController::class, 'getNotesByMatiere']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -49,6 +50,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/etudiants/{id}', [EtudiantController::class, 'destroy']);
 
 });
+Route::get('/etudiants/by-user/{userId}', [EtudiantController::class, 'getEtudiantByUser']);
+
 use App\Http\Controllers\EnseignantController;
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -60,5 +63,52 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 use App\Http\Controllers\MatiereController;
-
 Route::apiResource('matieres', MatiereController::class);
+
+use App\Http\Controllers\CoursController;
+Route::apiResource('cours', CoursController::class);
+
+use App\Http\Controllers\NoteController;
+
+// 📌 Récupérer les étudiants liés à une matière (par leur classe)
+Route::get('/enseignant/matiere/{matiere_id}/etudiants', [NoteController::class, 'getEtudiants']);
+
+// 📌 Enregistrer une nouvelle note
+Route::post('/notes', [NoteController::class, 'store']);
+
+// 📌 (Optionnel) Voir les notes d’un étudiant pour une matière
+Route::get('/notes/{etudiant_id}/{matiere_id}', [NoteController::class, 'getNotesByEtudiant']);
+
+
+
+// partie notes 
+Route::get('/enseignant/matieres/{id}', [EnseignantController::class, 'mesMatieres']);
+
+// ✅ Route qui retourne l'enseignant lié à l'utilisateur connecté
+// Route::get('/enseignants/by-user/{userId}', function ($userId) {
+//     return \App\Models\Enseignant::where('user_id', $userId)->first();
+// });
+Route::get('/enseignants/by-user/{userId}', function ($userId) {
+    return \App\Models\Enseignant::with('user')->where('user_id', $userId)->first();
+});
+
+Route::post('/notes/store-or-update', [NoteController::class, 'storeOrUpdate']);
+Route::get('/notes/matiere/{matiere_id}', [NoteController::class, 'getNotesByMatiere']);
+
+// enseignat 
+Route::get('/etudiants/by-classe/{classe}', [EtudiantController::class, 'getByClasse']);
+
+//etudiant 
+Route::get('/etudiant/notes/{etudiantId}', [NoteController::class, 'getNotesByEtudiantSimple']);
+
+
+//parent 
+Route::middleware('auth:api')->get('/parent/enfants', [AuthController::class, 'getEnfants']);
+
+
+// profile 
+use App\Models\ParentModel;
+
+Route::get('/parents/by-user/{userId}', function ($userId) {
+    return ParentModel::with('user')->where('user_id', $userId)->first();
+});

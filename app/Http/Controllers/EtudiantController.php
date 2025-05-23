@@ -191,6 +191,21 @@ public function store(Request $request)
 
     return response()->json(['message' => 'Étudiant créé avec succès']);
 }
+ // EtudiantController.php
+public function getByClasse($classe)
+{
+    return Etudiant::with('user')->where('classe', $classe)->get();
+}
+public function getEtudiantByUser($userId)
+{
+    $etudiant = Etudiant::where('user_id', $userId)->with('user')->first();
+
+    if (!$etudiant) {
+        return response()->json(['message' => 'Etudiant non trouvé'], 404);
+    }
+
+    return response()->json($etudiant);
+}
 
     
 }

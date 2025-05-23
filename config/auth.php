@@ -42,12 +42,24 @@ return [
     //         'provider' => 'users',
     //     ],
     // ],
-    'guards' => [
+//     'guards' => [
+//     'api' => [
+//         'driver' => 'token', // ou 'jwt' si tu utilises tymon/jwt-auth
+//         'provider' => 'users',
+//     ],
+// ],
+'guards' => [
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users',
+    ],
+
     'api' => [
-        'driver' => 'token', // ou 'jwt' si tu utilises tymon/jwt-auth
+        'driver' => 'sanctum', // ou 'token' si tu n'utilises pas sanctum
         'provider' => 'users',
     ],
 ],
+
 
 
     /*
